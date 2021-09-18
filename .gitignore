@@ -60,3 +60,6 @@ config/
 
 # next.js build output
 .next
+
+#script
+populatedb.js
