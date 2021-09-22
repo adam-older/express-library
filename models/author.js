@@ -28,6 +28,8 @@ AuthorSchema.virtual('lifespan').get(function() {
   lifetime_string += ' - ';
   if (this.date_of_death) {
     lifetime_string += DateTime.fromJSDate(this.date_of_death).toLocaleString(DateTime.DATE_MED)
+  } else if (this.date_of_birth) {
+    lifetime_string += 'Present';
   }
   return lifetime_string;
 });

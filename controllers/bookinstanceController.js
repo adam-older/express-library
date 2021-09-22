@@ -1,4 +1,5 @@
 var BookInstance = require('../models/bookinstance');
+var async = require('async');
 
 // Display list of all BookInstances.
 exports.bookinstance_list = function(req, res, next) {
@@ -15,7 +16,17 @@ exports.bookinstance_list = function(req, res, next) {
 
 // Display detail page for a specific BookInstance.
 exports.bookinstance_detail = function(req, res) {
-    res.send('NOT IMPLEMENTED: BookInstance detail: ' + req.params.id);
+    BookInstance.findById(req.params.id)
+        .populate('book')
+        .exec(function(err, result) {
+            if (err) return next(err);
+            if (result == null) {
+                var err = new Error('Book Instance not found');
+                err.status = 404;
+                return next(err);
+            }
+            res.render('bookinstance_detail', { bookinstance: result })
+        })
 };
 
 // Display BookInstance create form on GET.
