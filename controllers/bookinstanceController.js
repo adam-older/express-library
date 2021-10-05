@@ -35,7 +35,7 @@ exports.bookinstance_detail = function(req, res) {
 exports.bookinstance_create_get = async (req, res, next) => {
     try {
         let books = await Book.find();
-        console.log(books);
+        // console.log(books);
         await res.render('bookinstance_form', {title: 'Create Book Intance', book_list: books });
     } catch (err) {
         return next(err);
@@ -43,9 +43,43 @@ exports.bookinstance_create_get = async (req, res, next) => {
 };
 
 // Handle BookInstance create on POST.
-exports.bookinstance_create_post = [ 
-    (req, res, next) => {
-
+exports.bookinstance_create_post = [
+    // parse response
+    body('book', 'Book must not be empty.').trim().isLength({ min: 1 }).escape(),
+    body('imprint', 'Imprint must not be empty.').trim().isLength({ min: 1 }).escape(),
+    body('due_back', 'Invalid Date.').optional({ checkFalsy: true }).isISO8601().toDate(),
+    body('status', 'Status must not be empty.').escape(),
+    //Process request
+    async (req, res, next) => {
+        // Extract validation errors
+        const errors = validationResult(req);
+        
+        // create new book instance object
+        var bookInstance = new BookInstance(
+            {
+                book: req.body.book,
+                imprint: req.body.imprint,
+                due_back: req.body.due_back,
+                status: req.body.status,
+            }
+        );
+        if (!errors.isEmpty()) {
+            // handle errors by returning to form template
+            try {
+                let books = await Book.find();
+                // console.log(books);
+                await res.render('bookinstance_form', {title: 'Create Book Intance', bookinstance: bookInstance  });
+            } catch (err) {
+                return next(err);
+            }
+        }
+        // Else: data is good, save book instance to database
+        try {
+            bookInstance.save();
+            await res.redirect(bookInstance.url);
+        } catch (err) {
+            return next(err);
+        }
     }
 ]
 
