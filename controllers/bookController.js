@@ -230,9 +230,12 @@ exports.book_create_post = [
 // ];
 
 // Display book delete form on GET.
-exports.book_delete_get = function(req, res) {
-    res.send('NOT IMPLEMENTED: Book delete GET');
-};
+exports.book_delete_get = async (req, res, next) => {
+    // try {
+    //     var book = Book.findById(req.params.id);
+
+    // }
+}
 
 // Handle book delete on POST.
 exports.book_delete_post = function(req, res) {
